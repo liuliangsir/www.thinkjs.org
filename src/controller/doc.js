@@ -13,6 +13,7 @@ export default class extends base {
     // todo
     const key = `sidebar_${lang}_${version}`;
     let data = await this.cache(key);
+    
     if (!data) {
       const filePath = `${think.ROOT_PATH}/view/${lang}/doc/${version}/sidebar.json`;
       const content = fs.readFileSync(filePath);
@@ -186,7 +187,7 @@ export default class extends base {
     this.assign('hasVersion', true);
     this.getSideBar();
 
-    const keyword = this.get('keyword').trim();
+    const keyword = this.cmdFilter(this.get('keyword'));
     this.assign('keyword', keyword);
     if (!keyword) {
       return this.display();
@@ -195,5 +196,11 @@ export default class extends base {
     const result = await this.getSearchResult(keyword);
     this.assign('searchResult', result);
     this.display();
+  }
+
+  cmdFilter(keyword) {
+    keyword = keyword.trim();
+    keyword = keyword.replace(/[^\u4e00-\u9fa5A-Za-z0-9_ *-]/g, '');
+    return keyword.replace("'", "\\'");
   }
 }
